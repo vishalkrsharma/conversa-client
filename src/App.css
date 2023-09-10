@@ -3,9 +3,9 @@
 .App {
   min-height: 100vh;
   display: flex;
-  background-image: url('/assets/background.jpg');
-  background-size: cover;
-  background-position: center;
-  font-family: 'Ubuntu Mono', monospace;
   color: #000;
+}
+
+* {
+  font-family: 'Ubuntu Mono', monospace;
 }

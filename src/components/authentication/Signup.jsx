@@ -1,12 +1,14 @@
 import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useToast } from '@chakra-ui/toast';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { ChatState } from '../../contexts/ChatProvider';
 
 const Signup = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
@@ -14,7 +16,8 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
-  const navigate = useNavigate();
+
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
     setLoading(true);
@@ -62,9 +65,10 @@ const Signup = () => {
         isClosable: true,
         position: 'bottom',
       });
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      // localStorage.setItem('user', JSON.stringify(data));
+      setUsername(data);
+      navigate('/');
       setLoading(false);
-      navigate('/chats');
     } catch (error) {
       toast({
         title: 'Error Occured!',
@@ -126,7 +130,7 @@ const Signup = () => {
       <Button
         colorScheme='blue'
         width='100%'
-        style={{ marginTop: 15 }}
+        mt='15'
         onClick={submitHandler}
         isLoading={loading}
       >
