@@ -8,8 +8,9 @@ import { AddIcon } from '@chakra-ui/icons';
 import ChatLoading from './miscellaneous/ChatLoading';
 import { getSender } from '../utils/ChatLogics';
 import BoringAvatars from './miscellaneous/BoringAvatars';
+import GroupChatModal from './miscellaneous/GroupChatModal';
 
-const Chats = () => {
+const Chats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const toast = useToast();
   const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState();
@@ -40,9 +41,7 @@ const Chats = () => {
   useEffect(() => {
     setLoggedUser(user);
     fetchChats();
-  }, []);
-
-  console.log(chats);
+  }, [fetchAgain]);
 
   return (
     <Box
@@ -65,13 +64,15 @@ const Chats = () => {
         alignItems='center'
       >
         Chats
-        <Button
-          display='flex'
-          fontSize={{ base: '17px', md: '10px', lg: '17px' }}
-          rightIcon={<AddIcon />}
-        >
-          New Group Chat
-        </Button>
+        <GroupChatModal>
+          <Button
+            display='flex'
+            fontSize={{ base: '17px', md: '10px', lg: '17px' }}
+            rightIcon={<AddIcon />}
+          >
+            Group Chat
+          </Button>
+        </GroupChatModal>
       </Box>
       <Box
         display='flex'
@@ -89,8 +90,8 @@ const Chats = () => {
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor='pointer'
-                bg={selectedChat === chat ? '#38B2AC' : '#E8E8E8'}
-                color={selectedChat === chat ? 'white' : 'black'}
+                bg={selectedChat?._id === chat._id ? '#38B2AC' : '#E8E8E8'}
+                color={selectedChat?._id === chat._id ? 'white' : 'black'}
                 px={3}
                 py={2}
                 borderRadius='lg'

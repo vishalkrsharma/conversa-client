@@ -38,7 +38,6 @@ const SideDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  console.log(searchResult);
   const logoutHandler = () => {
     setUser({});
     navigate('/');

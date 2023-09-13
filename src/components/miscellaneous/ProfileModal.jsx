@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDisclosure } from '@chakra-ui/hooks';
 import { IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from '@chakra-ui/react';
-import { ViewIcon } from '@chakra-ui/icons';
+import { InfoIcon } from '@chakra-ui/icons';
 import BoringAvatars from './BoringAvatars';
 
 const ProfileModal = ({ user, children }) => {
@@ -14,13 +14,14 @@ const ProfileModal = ({ user, children }) => {
       ) : (
         <IconButton
           display={{ base: 'flex' }}
-          icon={<ViewIcon />}
+          icon={<InfoIcon />}
           onClick={onOpen}
         />
       )}
       <Modal
         isOpen={isOpen}
         onClose={onClose}
+        isCentered
       >
         <ModalOverlay />
         <ModalContent>
