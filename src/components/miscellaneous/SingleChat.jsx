@@ -6,9 +6,18 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import { getSender, getSenderFull } from '../../utils/ChatLogics';
 import ProfileModal from './ProfileModal';
 import UpdateGroupChatModal from './UpdateGroupChatModal';
+import { Spinner } from '@chakra-ui/react';
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { user, selectedChat, setSelectedChat } = ChatState();
+
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [istyping, setIsTyping] = useState(false);
+  const toast = useToast();
 
   return (
     <>
@@ -19,7 +28,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             pb={3}
             px={2}
             w='100%'
-            fontFamily='Work sans'
             display='flex'
             justifyContent={{ base: 'space-between' }}
             alignItems='center'
@@ -55,7 +63,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             h='100%'
             borderRadius='lg'
             overflowY='hidden'
-          ></Box>
+          >
+            {!loading ? (
+              <Spinner
+                size='xl'
+                w={20}
+                h={20}
+                alignSelf='center'
+                margin='auto'
+              />
+            ) : (
+              <></>
+            )}
+          </Box>
         </>
       ) : (
         <Box

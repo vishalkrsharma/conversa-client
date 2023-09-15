@@ -136,7 +136,10 @@ const SideDrawer = () => {
           </Button>
         </Tooltip>
         <Text fontSize='2xl'>Conversa</Text>
-        <div>
+        <Box
+          display='flex'
+          gap='2'
+        >
           <Menu>
             <MenuButton
               as={Button}
@@ -174,7 +177,7 @@ const SideDrawer = () => {
               <MenuItem onClick={logoutHandler}>Log out</MenuItem>
             </MenuList>
           </Menu>
-        </div>
+        </Box>
       </Box>
       <Drawer
         placement='left'
