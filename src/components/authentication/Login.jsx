@@ -70,6 +70,7 @@ const Login = () => {
         <Input
           placeholder='Enter Username'
           onChange={(e) => setUsername(e.target.value)}
+          value={username}
         />
       </FormControl>
       <FormControl
@@ -82,6 +83,7 @@ const Login = () => {
             type={show ? 'text' : 'password'}
             placeholder='Enter Password'
             onChange={(e) => setPassword(e.target.value)}
+            value={password}
           />
           <InputRightElement width='4.5rem'>
             <Button

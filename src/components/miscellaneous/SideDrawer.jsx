@@ -207,7 +207,10 @@ const SideDrawer = () => {
                 <UserListItem
                   key={user._id}
                   user={user}
-                  handleFunction={() => accessChat(user._id)}
+                  handleFunction={() => {
+                    accessChat(user._id);
+                    onClose();
+                  }}
                 />
               ))
             )}
@@ -215,6 +218,8 @@ const SideDrawer = () => {
               <Spinner
                 ml='auto'
                 display='flex'
+                justifyContent='center'
+                alignItems='center'
               />
             )}
           </DrawerBody>
