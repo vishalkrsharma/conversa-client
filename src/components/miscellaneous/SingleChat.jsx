@@ -13,7 +13,7 @@ import io from 'socket.io-client';
 import Lottie from 'react-lottie';
 import animationData from '../../animations/typing.json';
 
-const ENDPOINT = import.meta.VITE_SERVER_URL || 'http://localhost:5000';
+const ENDPOINT = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000';
 var socket, selectedChatCompare;
 
 const defaultOptions = {
