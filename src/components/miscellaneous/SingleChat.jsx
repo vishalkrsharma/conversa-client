@@ -9,21 +9,58 @@ import UpdateGroupChatModal from './UpdateGroupChatModal';
 import { FormControl, Input, Spinner, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import ScrollableChat from './ScrollableChat';
+import io from 'socket.io-client';
+import Lottie from 'react-lottie';
+import animationData from '../../animations/typing.json';
+
+const ENDPOINT = import.meta.VITE_BACKEND_URL || 'http://localhost:5000';
+var socket, selectedChatCompare;
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice',
+  },
+};
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
-  const [istyping, setIsTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit('setup', user);
+    socket.on('connected', () => setSocketConnected(true));
+    socket.on('typing', () => setIsTyping(true));
+    socket.on('stop-typing', () => setIsTyping(false));
+  }, []);
+
+  useEffect(() => {
     fetchMessages();
+    selectedChatCompare = selectedChat;
   }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on('message-received', (newMessageReceived) => {
+      if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+        if (!notification.includes(newMessageReceived)) {
+          setNotification([newMessageReceived, ...notification]);
+          setFetchAgain(!fetchAgain);
+        }
+      } else {
+        setMessages([...messages, newMessageReceived]);
+      }
+    });
+  });
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -41,6 +78,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
       setMessages(data);
       setLoading(false);
+
+      socket.emit('join-chat', selectedChat._id);
     } catch (err) {
       toast({
         title: 'Error Occured!',
@@ -55,6 +94,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (e) => {
     if (e.key === 'Enter' && newMessage) {
+      socket.emit('stop-typing', selectedChat._id);
       try {
         const config = {
           headers: {
@@ -74,6 +114,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           config
         );
 
+        socket.emit('new-message', data);
         setMessages([...messages, data]);
       } catch (err) {
         toast({
@@ -90,6 +131,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
+
+    if (!socketConnected) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit('typing', selectedChat._id);
+    }
+    let lastTypingTime = new Date().getTime();
+    var timerLength = 3000;
+    setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= timerLength && typing) {
+        socket.emit('stop typing', selectedChat._id);
+        setTyping(false);
+      }
+    }, timerLength);
   };
 
   return (
@@ -160,6 +218,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               isRequired
               mb='3'
             >
+              {isTyping && (
+                <div>
+                  <Lottie
+                    options={defaultOptions}
+                    // height={50}
+                    width={70}
+                    style={{ marginBottom: 15, marginLeft: 0 }}
+                  />
+                </div>
+              )}
               <Input
                 variant='filled'
                 placeholder='Type a message...'

@@ -27,6 +27,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ChatLoading from './ChatLoading';
 import UserListItem from './UserListItem';
+import { getSender } from '../../utils/ChatLogics';
+import NotificationBadge from 'react-notification-badge';
+import { Effect } from 'react-notification-badge';
 
 const SideDrawer = () => {
   const [search, setSearch] = useState('');
@@ -34,7 +37,7 @@ const SideDrawer = () => {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
   const navigate = useNavigate();
-  const { user, setUser, setSelectedChat, chats, setChats } = ChatState();
+  const { user, setUser, setSelectedChat, chats, setChats, notification, setNotification } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -141,21 +144,32 @@ const SideDrawer = () => {
           gap='2'
         >
           <Menu>
-            <MenuButton
-              as={Button}
-              p='1'
-            >
+            <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
               <BellIcon
                 fontSize='2xl'
-                m='1'
+                m={1}
               />
             </MenuButton>
             <MenuList>
-              <MenuItem>Download</MenuItem>
-              <MenuItem>Create a Copy</MenuItem>
-              <MenuItem>Mark as Draft</MenuItem>
-              <MenuItem>Delete</MenuItem>
-              <MenuItem>Attend a Workshop</MenuItem>
+              {!notification.length ? (
+                <MenuItem>No messages!</MenuItem>
+              ) : (
+                notification.map((noti) => (
+                  <MenuItem
+                    key={noti._id}
+                    onClick={() => {
+                      setSelectedChat(noti.chat);
+                      setNotification(notification.filter((no) => no !== noti));
+                    }}
+                  >
+                    {noti.chat.isGroupChat ? `New Message: ${noti.chat.chatName}` : `New Message: ${getSender(user, noti.chat.users)}`}
+                  </MenuItem>
+                ))
+              )}
             </MenuList>
           </Menu>
           <Menu>
