@@ -13,7 +13,6 @@ import io from 'socket.io-client';
 import Lottie from 'react-lottie';
 import animationData from '../../animations/typing.json';
 
-const ENDPOINT = import.meta.env.VITE_WEB_SOCKET_URL || 'http://localhost:5000';
 var socket, selectedChatCompare;
 
 const defaultOptions = {
@@ -37,7 +36,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const toast = useToast();
 
   useEffect(() => {
-    socket = io(ENDPOINT);
+    socket = io(import.meta.env.VITE_WEB_SOCKET_URL || 'http://localhost:5000');
     socket.emit('setup', user);
     socket.on('connected', () => setSocketConnected(true));
     socket.on('typing', () => setIsTyping(true));
